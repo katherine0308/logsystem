@@ -1,0 +1,55 @@
+.container {
+	padding: 20px;
+}
+
+.index-search {
+	padding-top: 180px;
+	text-align: center;
+}
+
+.detail-search {
+
+}
+
+.interval {
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
+.index-title {
+	font-family: 'Microsoft YaHei';
+	font-weight: bold;
+	font-size: 30px;
+	line-height: 70px;
+	color: #49A9EE;
+}
+
+.detail-title {
+	display: inline-block;
+	font-family: 'Microsoft YaHei';
+	font-weight: bold;
+	font-size: 20px;
+	line-height: 30px;
+	color: #49A9EE;
+}
+
+.body {
+	margin-top: 20px;
+}
+
+.item {
+	margin-top: 10px;
+	padding: 10px;
+}
+
+.input-inline {
+	width: 150px;
+}
+
+.nothing {
+	margin-top: 20px;
+	border-top: 15px solid #eee;
+	padding-top: 10px;
+	font-size: 16px;
+	color: #aaa;
+}

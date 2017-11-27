@@ -7,11 +7,11 @@ class Log {
 
         // 当并发到达xx时，停止接收info, warn等级的日志，并返回合理信息
 
-        if(!req.body || !req.body.sUrl || !req.body.sSystem || !req.body.sLevel) {
-            return res.status(200).send({code: 450, msg: "参数不正确", data: req.body})
+        if(!req.body || !req.body.sSystem || !req.body.sLevel) {
+            return res.status(200).send({code: 450, msg: "缺少参数", data: req.body})
         }
 
-        req.body.sSystemTime = moment().format('YYYY-MM-DD HH:mm:ss')
+        req.body.sSystemTime = new Date();
 
         // 发送给大数据一份
         // request.post('http://xxx', req.body);

@@ -6,7 +6,8 @@
             "dbname": "",
             "dbpass": ""
         },
-        "system": ["MSO", "CRM", "DS"]
+        "system": ["MSO", "CRM", "DS"],
+        "level": ["error", "warn", "info"]
     },
     "development": {
         "mongodb": {
@@ -15,7 +16,8 @@
             "dbname": "",
             "dbpass": ""
         },
-        "system": []
+        "system": ["MSO", "CRM", "DS"],
+        "level": ["error", "warn", "info"]
     },
     "production": {
         "mongodb": {
@@ -24,6 +26,7 @@
             "dbname": "",
             "dbpass": ""
         },
-        "system": []
+        "system": ["MSO", "CRM", "DS"],
+        "level": ["error", "warn", "info"]
     }
 }

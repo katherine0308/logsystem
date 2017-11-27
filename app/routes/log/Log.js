@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
-import { Input, Button, Icon, DatePicker, Dropdown, Menu, Alert } from 'antd'
+import { Input, Button, Icon, DatePicker, Dropdown, Menu, Alert, notification } from 'antd'
 const { RangePicker } = DatePicker;
 import moment from 'moment'
 
 import LogActions from './LogActions'
 import LogStore from './LogStore'
+import './Log.css'
 
 class Log extends Component {
     constructor(props) {
@@ -25,70 +26,78 @@ class Log extends Component {
         this.setState(state);
     }
 
+    handleSubmit() {
+        if(new Date(this.state.dateRange.to).getTime() - new Date(this.state.dateRange.from).getTime() > 86400000 * this.state.dateLimit) {
+			notification.warn({message: '日期应在3天以内'});
+			return false;
+		}
+
+        LogActions.fetchLogs(this.state.dateRange, this.state.system, this.state.level.toLowerCase(), this.state.url, this.state.mark)
+    }
+
     render() {
         const systemMenu = (
             <Menu>
-                <Menu.Item>
-                    <a onClick={e => {LogActions.getSystem('MSO')}}>MSO</a>
-                </Menu.Item>
-                <Menu.Item>
-                    <a onClick={e => {LogActions.getSystem('CRM')}}>CRM</a>
-                </Menu.Item>
-                <Menu.Item>
-                    <a onClick={e => {LogActions.getSystem('DS')}}>DS</a>
-                </Menu.Item>
+                {this.state.systemInput.map(i => (
+                    <Menu.Item key={i}>
+                        <a onClick={e => {LogActions.getSystem(i)}}>{i}</a>
+                    </Menu.Item>
+                ))}
             </Menu>
         )
 
         const levelMenu = (
             <Menu>
-                <Menu.Item>
-                    <a onClick={e => {LogActions.getLevel('ERROR')}}>ERROR</a>
-                </Menu.Item>
-                <Menu.Item>
-                    <a onClick={e => {LogActions.getLevel('WARN')}}>WARN</a>
-                </Menu.Item>
-                <Menu.Item>
-                    <a onClick={e => {LogActions.getLevel('INFO')}}>INFO</a>
-                </Menu.Item>
+                {this.state.levelInput.map(i => (
+                    <Menu.Item key={i}>
+                        <a onClick={e => {LogActions.getLevel(i)}}>{i}</a>
+                    </Menu.Item>
+                ))}
             </Menu>
         )
 
         return (
-            <div>
-                <div>
-                    <h1>日志系统</h1>
-                    日期：（不能超过3天）
+            <div className="container">
+                <div className={this.state.searchClassName}>
+                    <h1 className={this.state.titleClassName}>日志系统</h1>
                     <RangePicker
+                        className="interval"
                         size="large"
                         disabledDate={current => {
-                            return current.valueOf() > new Date(moment().format('YYYY-MM-DD') + ' 23:59') || current.valueOf() < new Date(moment().subtract(1, "months").format("YYYY-MM-DD"));
+                            if(current) {
+                                return current && current.valueOf() > new Date(moment().format('YYYY-MM-DD') + ' 23:59') || current.valueOf() < new Date(moment().subtract(1, "months").format("YYYY-MM-DD"));
+                            }
                         }}
-                        ranges={{ '今天': [moment(), moment()], '昨天': [moment(), moment().endOf('month')], '最近三天': [moment(), moment()] }}
+                        //ranges={{ '今天': [moment(), moment()], '昨天': [moment(), moment().endOf('month')], '最近三天': [moment(), moment()] }}
                         defaultValue={[moment(moment().format('YYYY-MM-DD') + ' 00:00', 'YYYY-MM-DD HH:mm'), moment(moment().format('YYYY-MM-DD') + ' 23:59', 'YYYY-MM-DD HH:mm')]}
                         format="YYYY-MM-DD HH:mm"
                         showTime={{ format: 'HH:mm' }}
-                        onChange={(value, dateString) => {}}
-                        onOk={value => {LogActions.pickDateRange(value)}}
+                        renderExtraFooter={() => <small>建议选择日期范围在三天内</small>}
+                        onChange={(value, dateString) => { LogActions.pickDateRange(dateString) }}
+                        onOk={value => {}}
                     />
-                    系统：
-                    <Dropdown size="large" overlay={systemMenu} placement="bottomCenter">
+                    <span onClick={e => {LogActions.showSelf()}}>.</span>
+                    <Dropdown className="interval" overlay={systemMenu} placement="bottomCenter">
                         <Button>{this.state.system}</Button>
                     </Dropdown>
-                    等级：
-                    <Dropdown size="large" overlay={levelMenu} placement="bottomCenter">
+                    <Dropdown className="interval" size="large" overlay={levelMenu} placement="bottomCenter">
                         <Button>{this.state.level}</Button>
                     </Dropdown>
-                    <Button type="primary" size="large" onClick={e => {LogActions.fetchLogs(this.state.dateRange, this.state.system, this.state.level.toLowerCase())}}>搜索</Button>
+                    <span onClick={e => {LogActions.showInput()}}>.</span>
+                    <Input className="interval input-inline" style={{display: this.state.urlShow? '': 'none'}} size="large" placeholder="URL" onChange={e => {LogActions.changeUrl(e.target.value)}} />
+                    <Input className="interval input-inline" style={{display: this.state.markShow? '': 'none'}} size="large" placeholder="MARK" onChange={e => {LogActions.changeMark(e.target.value)}} />
+                    <Button type="primary" size="large" className="interval" onClick={this.handleSubmit.bind(this)}>搜索</Button>
                 </div>
-                <Alert style={{display: this.state.total > 0? '': 'none'}} message={`共计${this.state.total}条数据。${this.state.total > 500? '数据量超过500，仅显示500条，如需全面显示，请缩小时间范围': ''}`} type="info" />
-                <div>
-                    {this.state.logData.map(i => (
-                        <pre key={i._id}>{JSON.stringify(i, null, 2)}</pre>
-                    ))}
-                </div>
-                <div style={{display: this.state.total == 0? '': 'none'}}>
-                    没有找到任何数据
+                <div className="body">
+                    <Alert style={{display: this.state.total > 0? '': 'none'}} message={`共计${this.state.total}条数据。${this.state.total > this.state.logLimit? '数据量超过' + this.state.logLimit + '，仅显示' + this.state.logLimit + '条，如需全面显示，请缩小时间范围': ''}`} type="info" />
+                    <div>
+                        {this.state.logData.map(i => (
+                            <pre key={i._id} className="item">{JSON.stringify(i, null, 2)}</pre>
+                        ))}
+                    </div>
+                    <div className="nothing" style={{display: this.state.total == 0? '': 'none'}}>
+                        没有找到任何数据
+                    </div>
                 </div>
             </div>
         )

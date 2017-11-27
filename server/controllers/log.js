@@ -66,10 +66,20 @@ class Log {
         }
 
         var params = {
-            sSystemTime: {$gte: req.query.dateRange.from, $lte: req.query.dateRange.to},
+            sSystemTime: {$gte: new Date(req.query.dateRange.from), $lte: new Date(req.query.dateRange.to)},
             sSystem: req.query.system,
             sLevel: req.query.level
         }
+
+        if(req.query.url) {
+            params.sUrl = new RegExp(req.query.url);
+        }
+
+        if(req.query.mark) {
+            params.sMark = req.query.mark;
+        }
+
+        console.log(params)
 
         var logM = common.helper.modelLoader('log');
 
@@ -77,7 +87,7 @@ class Log {
             var total = yield logM.count(params);
 
             logM.find(params, {})
-                .limit(1000)
+                .limit(500)
                 .exec(function(err, result) {
                     if(err) return res.status(500).send({code: 500, msg: '', eres: err.toString()});
                     return res.status(200).send({result, total});

@@ -10,7 +10,7 @@ var LogSchema = new mongoose.Schema({
     sLevel: {type: String, enum: ["error", "warn", "info"]},
     sMark: String,
     sCreateTime : String,
-    sSystemTime: String,
+    sSystemTime: Date,
     oOption : Object
 })
 
