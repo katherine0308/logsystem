@@ -5,7 +5,7 @@ var LogSchema = new mongoose.Schema({
     sMethod : String,
     sIp : String,
     sUrl : String,
-    sSystem: {type: String, enum: ["MSO", "CRM", "DS"]},
+    sSystem: {type: String, enum: ["MSO", "CRM", "DS", "SELF"]},
     sPart: String,
     sLevel: {type: String, enum: ["error", "warn", "info"]},
     sMark: String,

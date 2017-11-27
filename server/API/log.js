@@ -1,20 +1,23 @@
 var common = require('../lib/common')
-var moment = require('moment')
+var maxLevel = common.config.maxLevel;
+var moment = require('moment');
+var levels = {"error": 1, "warn": 2, "info": 3};
 // var request = require('request')
 
 class Log {
     postCreate(req, res, next) {
-
-        // 当并发到达xx时，停止接收info, warn等级的日志，并返回合理信息
-
         if(!req.body || !req.body.sSystem || !req.body.sLevel) {
             return res.status(200).send({code: 450, msg: "缺少参数", data: req.body})
         }
 
+	if(levels[req.body.sLevel] > maxLevel) {
+		return res.status(200).send({code: 454, msg: `系统设定，暂不接收${req.body.sLevel}等级日志`});
+	}
+
         req.body.sSystemTime = new Date();
 
         // 发送给大数据一份
-        // request.post('http://xxx', req.body);
+        // request.post({url: 'http://xxx', form: req.body}, function(err, response, data) { // TODO });
         
         var logM = common.helper.modelLoader('log');
         logM.create(req.body, function(err, result) {

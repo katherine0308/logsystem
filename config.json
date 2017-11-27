@@ -7,7 +7,8 @@
             "dbpass": ""
         },
         "system": ["MSO", "CRM", "DS"],
-        "level": ["error", "warn", "info"]
+        "level": ["error", "warn", "info"],
+	  "maxLevel": 3
     },
     "development": {
         "mongodb": {
@@ -17,7 +18,8 @@
             "dbpass": ""
         },
         "system": ["MSO", "CRM", "DS"],
-        "level": ["error", "warn", "info"]
+        "level": ["error", "warn", "info"],
+	  "maxLevel": 3
     },
     "production": {
         "mongodb": {
@@ -27,6 +29,7 @@
             "dbpass": ""
         },
         "system": ["MSO", "CRM", "DS"],
-        "level": ["error", "warn", "info"]
+        "level": ["error", "warn", "info"],
+	  "maxLevel": 3
     }
 }
